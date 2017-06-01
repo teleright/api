@@ -70,8 +70,14 @@ class Accept implements Parser
         $pattern = '/application\/'.$this->standardsTree.'\.('.$this->subtype.')\.([\w\d\.\-]+)\+([\w]+)/';
 
         if (! preg_match($pattern, $request->header('accept'), $matches)) {
-            if ($strict) {
-                throw new BadRequestHttpException('Accept header could not be properly parsed because of a strict matching process.');
+
+
+            $api = env('API_STRICT_SPEC_URL', 'api/*');
+
+            if ($request->is($api)) {
+                if ($strict) {
+                    throw new BadRequestHttpException('Accept header could not be properly parsed because of a strict matching process.');
+                }
             }
 
             $default = 'application/'.$this->standardsTree.'.'.$this->subtype.'.'.$this->version.'+'.$this->format;
